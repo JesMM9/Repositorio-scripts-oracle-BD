@@ -31,7 +31,7 @@ CREATE TABLE PARTICIPACIONES
 	JOCKEY VARCHAR2(10) NOT NULL,
 	POSICION_FINAL NUMBER(2),
 	CONSTRAINT PK_PARTICIPACIONES PRIMARY KEY (COD_CABALLO,COD_CARRERA),
-	CONSTRAINT CHK1_PARTICIPACIONES CHECK (PASICION_FINAL>0),
+	CONSTRAINT CHK1_PARTICIPACIONES CHECK (POSICION_FINAL>0),
 	CONSTRAINT FK1_PARTICIPACIONES FOREIGN KEY (COD_CABALLO) REFERENCES CABALLOS(COD_CABALLO),
 	CONSTRAINT FK2_PARTICIPACIONES FOREIGN KEY (COD_CARRERA) REFERENCES CARRERAS(COD_CARRERA) 
 );
@@ -60,6 +60,127 @@ CREATE TABLE APUESTAS
 	CONSTRAINT FK3_APUESTAS FOREIGN KEY (COD_CARRERA) REFERENCES CARRERA(COD_CARRERA)
 );
 
+/*Inserta el registro o registros necesarios para 
+ * guardar la siguiente información:
+ * El cliente escocés realiza una apuesta al caballo
+ * más pesado de la primera carrera que se corra
+ * en el verano de 2009 por un importe de 2000 euros.
+ * En ese momento ese caballo en esa carrera se paga 30 a 1.
+ * Si es necesario algún dato invéntatelo, pero sólo
+ * los datos que sean estrictamente necesaria*/
 
+INSERT INTO CLIENTES
+VALUES ('12345678A', NULL, 'ESCOCÉS');
+
+INSERT INTO CABALLOS
+VALUES ('1', 'JUAN', 200, NULL, NULL, NULL);
+
+INSERT INTO CARRERAS
+VALUES ('1', TO DATE('01/07/09', 'DD/MM/YY'), NULL, NULL);
+
+INSERT INTO APUESTAS
+VALUES ('12345678A', '1', '1', 2000, 30);
+
+/*Inscribe a 2 caballos en la carrera cuyo código
+ * es C6. La carrera aún no se ha celebrado.
+ * Invéntate los jockeys y los dorsales y los caballos.*/
+
+INSERT INTO CABALLOS
+VALUES ('C6', 'CABALLO6', NULL, NULL, NULL);
+
+INSERT INTO CABALLOS
+VALUES ('C7', 'CABALLO7', NULL, NULL, NULL);
+
+INSERT INTO CARRERAS
+VALUES ('2', NULL, NULL, NULL);
+
+INSERT INTO PARTICIPACIONES
+VALUES ('C6', '2', 6, 'ALBERTO', NULL);
+
+INSERT INTO PARTICIPACIONES
+VALUES ('C7', '2', 7, 'PEPE', NULL);
+
+/*Inserta dos carreras con los datos que creas necesario.*/
+
+INSERT INTO CARRERAS
+VALUES ('3', TO DATE('05/04/25', 'DD/MM/YY'), 30000, NULL);
+
+INSERT INTO CARRERAS
+VALUES ('4', TO DATE('15/10/25', 'DD/MM/YY'), 90000, NULL);
+
+/*Quita el campo propietario de la tabla caballos*/
+
+ALTER TABLE CABALLOS
+DROP COLUMN PROPIETARIO;
+
+/*Añadir las siguientes restricciones a las tablas:
+ * 
+ * En la Tabla Participaciones los nombres de los jockeys
+ * tienen siempre las iniciales en mayúsculas.
+ * 
+ * La temporada de carreras transcurre del 10 de Marzo al
+ * 10 de Noviembre.
+ * 
+ * La nacionalidad de los caballos sólo puede ser Española,
+ * Británica o Árabe.
+ * 
+ * Si los datos que has introducidos no cumplen las
+ * restricciones haz los cambios necesarios para ellos.*/
+
+ALTER TABLE PARTICIPACIONES
+ADD CONSTRAINT CHK2_PARTICIPACIONES CHECK (JOCKEYS=INITCAP(JOCKEYS));
+
+ALTER TABLE CARRERAS
+ADD CONSTRAINT CHK3_CARRERAS CHECK (EXTRACT(MONTH FROM FECHA_Y_HORA) BETWEEN 3 AND 11 OR EXTRACT(DAY FROM FECHA_Y_HORA) BETWEEN 1 AND 10);
+
+ALTER TABLE CABALLOS
+ADD CONSTRAINT CHK4_CABALLOS CHECK (NACIONALIDAD IN ('ESPAÑOL', 'BRITÁNICO', 'ÁRABE'));
+
+/*Borra las carreras en las que no hay caballos inscritos.*/
+
+DELETE FROM CARRERAS
+WHERE COD_CARRERA LIKE NULL;
+
+/*Añade un campo llamado código en el campo clientes,
+ * que no permita valores nulos ni repetidos*/
+
+ALTER TABLE CLIENTES
+ADD COLUMN CODIGO VARCHAR2(10) UNIQUE;
+
+/*Nos hemos equivocado y el código C6 de la
+ * carrera en realidad es C66*/
+
+DELETE FROM PARTICIPACIONES
+WHERE COD_CABALLO LIKE 'C6';
+
+UPDATE CABALLOS
+SET COD_CABALLO='C66'
+WHERE COD_CABALLO LIKE 'C6';
+
+INSERT INTO PARTICIPACIONES
+VALUES ('C66', '2', 6, 'ALBERTO', NULL);
+
+/*Añade un campo llamado premio a la tabla apuestas.*/
+
+ALTER TABLE APUESTAS
+ADD COLUMN PREMIO NUMBER(6);
+
+/*Borra todas las tablas y datos con el número menor
+ * de instrucciones posibles.*/
+
+DELETE FROM CABALLOS;
+DROP TABLE CABALLOS;
+
+DELETE FROM CARRERAS;
+DROP TABLE CARRERAS;
+
+DELETE FROM PARTICIPACIONES;
+DROP TABLE PARTICIPACIONES;
+
+DELETE FROM CLIENTES;
+DROP TABLE CLIENTES;
+
+DELETE FROM APUESTAS;
+DROP TABLE APUESTAS;
 
 
