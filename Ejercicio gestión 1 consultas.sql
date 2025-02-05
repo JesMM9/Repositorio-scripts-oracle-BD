@@ -105,6 +105,21 @@ WHERE LOWER(nombre) LIKE '%s';
 SELECT nombre FROM clientes
 WHERE codpostal LIKE '02%' OR codpostal LIKE '11%' OR codpostal LIKE '21';
 
+--22. Artículos (todas las columnas) cuyo stock sea mayor que el stock mínimo  y no haya en stock más de 5 unidades del stock_min.
+
+SELECT * FROM articulos
+WHERE stock>stock_min AND stock<stock_min*5;
+
+--23. Nombre de las provincias que contienen el texto “MA” (bien mayúsculas o minúsculas).
+
+SELECT nombre FROM provincias
+WHERE LOWER(nombre) LIKE '%ma%';
+
+--24. Se desea promocionar los artículos de los que se posee un stock grande. Si el artículo es de más de 6000 € y el stock supera los 60000 €, se hará un descuento del 10%. Mostrar un listado de los artículos que van a entrar en la promoción, con su código de artículo, nombre del articulo, precio actual y su precio en la promoción.
+
+SELECT codart,precio,precio-precio*0.1 precio_descuento FROM articulos
+WHERE precio>6000 AND stock>60000;
+
 
 
 
