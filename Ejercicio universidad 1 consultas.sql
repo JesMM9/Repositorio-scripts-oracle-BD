@@ -58,5 +58,120 @@ SELECT NOMBRE, APELLIDO
 FROM PERSONA
 WHERE UPPER(APELLIDO) LIKE 'G%';
 
+--11. Obtener el nombre de las asignaturas que no tienen dato para el IdTitulacion.
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE IDTITULACION IS NULL;
+
+--12. Obtener el nombre de las asignaturas que tienen dato para el IdTitulacion.
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE IDTITULACION IS NOT NULL;
+
+--13. Mostrar el nombre de las asignaturas cuyo coste por cada crédito sea mayor de 8 euros.
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE COSTEBASICO/CREDITOS>8;
+
+--14. Mostrar el nombre y el número de horas de las asignaturas de la base de datos. (1cred.=10 horas).
+
+SELECT NOMBRE, CREDITOS*10 NUMERO_HORAS
+FROM ASIGNATURA;
+
+--15. Mostrar todos los datos de las asignaturas del 2º cuatrimestre ordenados por el identificador de asignatura.
+
+SELECT *
+FROM ASIGNATURA
+WHERE CUATRIMESTRE=2
+ORDER BY IDASIGNATURA ASC;
+
+--16. Mostrar el nombre de todas las mujeres que viven en “Madrid”.
+
+SELECT NOMBRE
+FROM PERSONA
+WHERE VARON=0 AND UPPER(CIUDAD) LIKE '%MADRID%';
+
+--17. Mostrar el nombre y los teléfonos de aquellas personas cuyo teléfono empieza por 91
+
+SELECT NOMBRE, TELEFONO
+FROM PERSONA
+WHERE TELEFONO LIKE '91%';
+
+--18. Mostrar el nombre de las asignaturas que contengan la sílaba “pro”
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE UPPER(NOMBRE) LIKE '%PRO%';
+
+--19. Mostrar el nombre de la asignatura de primero y que lo imparta el profesor que tiene código P101
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE CURSO=1 AND UPPER(IDPROFESOR) LIKE 'P101';
+
+--20. Mostrar el código de alumno que se ha matriculado tres o más veces de una asignatura, mostrando también el código de la asignatura correspondiente.
+
+SELECT IDALUMNO, IDASIGNATURA
+FROM ALUMNO_ASIGNATURA
+WHERE NUMEROMATRICULA>=3;
+
+--21. El coste de cada asignatura va subiendo a medida que se repite la asignatura. Para saber cuál sería el precio de las distintas asignaturas en las repeticiones (y así animar a nuestros alumnos a que estudien) se quiere mostrar un listado en donde esté el nombre de la asignatura, el precio básico, el precio de la primera repetición (un 10 por ciento más que el coste básico),  el precio de la segunda repetición (un 30 por ciento más que el coste básico) y el precio de la tercer repetición (un 60 por ciento más que el coste básico).
+
+SELECT NOMBRE, COSTEBASICO,
+COSTEBASICO+(COSTEBASICO*0.1) COSTE_1_REPETICION,
+COSTEBASICO+(COSTEBASICO*0.3) COSTE_2_REPETICION,
+COSTEBASICO+(COSTEBASICO*0.6) COSTE_3_REPETICION
+FROM ASIGNATURA;
+
+--22. Mostrar todos los datos de las personas que tenemos en la base de datos que han nacido antes de la década de los 70.
+
+SELECT *
+FROM PERSONA
+WHERE EXTRACT(YEAR FROM FEHCA_NACIMIENTO)<1970;
+
+--23. Mostrar el identificador de las personas que trabajan como profesor, sin que salgan valores repetidos.
+
+SELECT DISTINCT DNI
+FROM PROFESOR;
+
+--24. Mostrar el identificador de los alumnos que se encuentran matriculados en la asignatura con código 130122.
+
+SELECT IDALUMNO
+FROM ALUMNO_ASIGNATURA
+WHERE IDASIGNATURA LIKE '130122';
+
+--25. Mostrar los códigos de las asignaturas en las que se encuentra matriculado algún alumno, sin que salgan códigos repetidos.
+
+SELECT DISTINCT IDASIGNATURA
+FROM ALUMNO_ASIGNATURA;
+
+--26. Mostrar el nombre de las asignaturas que tienen más de 4 créditos, y además, o se imparten en el primer cuatrimestre o son del primer curso.
+
+SELECT NOMBRE
+FROM ASIGNATURA
+WHERE CREDITOS>4 AND (CUATRIMESTRE=1 OR CURSO=1);
+
+--27. Mostrar los distintos códigos de las titulaciones en las que hay alguna asignatura en nuestra base de datos.
+
+SELECT DISTINCT IDTITULACION
+FROM ASIGNATURA;
+
+--28. Mostrar el dni de las personas cuyo apellido contiene la letra g en mayúsculas o minúsculas.
+
+SELECT DNI
+FROM PERSONA
+WHERE UPPER(DNI) LIKE '%G%';
+
+--29. Mostrar las personas varones que tenemos en la base de datos que han nacido con posterioridad a 1970 y que vivan en una ciudad que empieza por M.
+
+SELECT *
+FROM PERSONA
+WHERE VARON=1
+AND EXTRACT(YEAR FROM FECHA_NACIMIENTO)>1970
+AND UPPER(CIUDAD) LIKE 'M%';
+
 
 
