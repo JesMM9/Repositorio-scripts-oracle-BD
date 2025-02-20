@@ -126,11 +126,17 @@ COSTEBASICO+(COSTEBASICO*0.3) COSTE_2_REPETICION,
 COSTEBASICO+(COSTEBASICO*0.6) COSTE_3_REPETICION
 FROM ASIGNATURA;
 
+SELECT A.NOMBRE, DECODE(ALA.NUMEROMATRICULA,1,A.COSTEBASICO,2,COSTEBASICO*1.1,3,COSTEBASICO*1.3,4,COSTEBASICO*1.6) COSTE_REPETICIONES
+FROM ASIGNATURA A JOIN ALUMNO_ASIGNATURA ALA
+ON A.IDASIGNATURA=ALA.IDASIGNATURA;
+
 --22. Mostrar todos los datos de las personas que tenemos en la base de datos que han nacido antes de la década de los 70.
 
 SELECT *
 FROM PERSONA
-WHERE EXTRACT(YEAR FROM FEHCA_NACIMIENTO)<1970;
+WHERE EXTRACT(YEAR FROM FECHA_NACIMIENTO)<1970;
+
+SELECT * FROM PERSONA WHERE FECHA_NACIMIENTO<TO_DATE('1970','YYYY');
 
 --23. Mostrar el identificador de las personas que trabajan como profesor, sin que salgan valores repetidos.
 
@@ -159,11 +165,15 @@ WHERE CREDITOS>4 AND (CUATRIMESTRE=1 OR CURSO=1);
 SELECT DISTINCT IDTITULACION
 FROM ASIGNATURA;
 
+SELECT DISTINCT A.IDTITULACION
+FROM ASIGNATURA A JOIN TITULACION T
+ON A.IDTITULACION=T.IDTITULACION;
+
 --28. Mostrar el dni de las personas cuyo apellido contiene la letra g en mayúsculas o minúsculas.
 
 SELECT DNI
 FROM PERSONA
-WHERE UPPER(DNI) LIKE '%G%';
+WHERE UPPER(APELLIDO) LIKE '%G%';
 
 --29. Mostrar las personas varones que tenemos en la base de datos que han nacido con posterioridad a 1970 y que vivan en una ciudad que empieza por M.
 
