@@ -63,34 +63,36 @@ WHERE STOCK IS NULL;
 
 --12. Número de líneas cuyo descuento es nulo (con un decimal)
 
-SELECT COUNT(LINEA)
+SELECT TO_CHAR(COUNT(CODFAC),'999.9')
 FROM LINEAS_FAC
 WHERE DTO IS NULL;
 
 --13. Obtener cuántas facturas tiene cada cliente.
 
 SELECT COUNT(F.CODFAC)
-FROM FACTURAS F JOIN CLIENTE C
+FROM FACTURAS F JOIN CLIENTES C
 ON F.CODCLI=C.CODCLI;
 
 --14. Obtener cuántas facturas tiene cada cliente, pero sólo si tiene dos o más  facturas.
 
 SELECT COUNT(F.CODFAC)
-FROM FACTURAS F JOIN CLIENTE C
+FROM FACTURAS F JOIN CLIENTES C
 ON F.CODCLI=C.CODCLI
 HAVING COUNT(F.CODFAC)>=2;
 
 --15. Importe de la facturación (suma del producto de la cantidad por el precio de las líneas de factura) de los  artículos.
 
 SELECT SUM(CANT*PRECIO)
-FROM LINEAS_FAC;
+FROM LINEAS_FAC
+GROUP BY CODART;
 
 --16. Importe de la facturación (suma del producto de la cantidad por el precio de las líneas de factura) de aquellos artículos cuyo código contiene la letra “A” (bien mayúscula o minúscula).
 
-SELECT SUM(CANT*PRECIO)
-FROM LINEAS_FAC LF JOIN FACTURAS F
-ON LF.CODFAC=F.CODFAC
-WHERE UPPER(F.CODCLI) LIKE '%A%';
+SELECT SUM(LF.CANT*LF.PRECIO)
+FROM LINEAS_FAC LF JOIN ARTICULOS A
+ON LF.CODART=A.CODART
+WHERE UPPER(A.CODART) LIKE '%A%'
+GROUP BY LF.CODART;
 
 --17. Número de facturas para cada fecha, junto con la fecha.
 
@@ -100,54 +102,63 @@ GROUP BY FECHA;
 
 --18. Obtener el número de clientes del pueblo junto con el nombre del pueblo mostrando primero los pueblos que más clientes tengan.
 
-SELECT COUNT(CODCLI), NOMBRE
-FROM PUEBLOS
-ORDER BY COUNT(CODCLI);
+SELECT COUNT(C.CODCLI), P.NOMBRE
+FROM PUEBLOS P JOIN CLIENTES C
+ON C.CODPUE=P.CODPUE
+GROUP BY P.NOMBRE
+ORDER BY COUNT(C.CODCLI) DESC;
 
 --19. Obtener el número de clientes del pueblo junto con el nombre del pueblo mostrando primero los pueblos que más clientes tengan, siempre y cuando tengan más de dos clientes.
 
-SELECT COUNT(CODCLI), NOMBRE
-FROM PUEBLOS
-HAVING COUNT(CODCLI)>=2
-ORDER BY COUNT(CODCLI);
+SELECT COUNT(C.CODCLI), P.NOMBRE
+FROM PUEBLOS P JOIN CLIENTES C
+ON C.CODPUE=P.CODPUE
+GROUP BY P.NOMBRE
+HAVING COUNT(C.CODCLI)>=2
+ORDER BY COUNT(C.CODCLI) DESC;
 
 --20. Cantidades totales vendidas para cada artículo cuyo código empieza por “P", mostrando también la descripción de dicho artículo.
 
-SELECT LF.CANT, A.DESCRIP
+SELECT SUM(LF.CANT), A.DESCRIP
 FROM LINEAS_FAC LF JOIN ARTICULOS A
 ON LF.CODART=A.CODART
-WHERE UPPER(A.CODART) LIKE 'P%';
+WHERE UPPER(A.CODART) LIKE 'P%'
+GROUP BY A.DESCRIP;
 
 --21. Precio máximo y precio mínimo de venta (en líneas de facturas) para cada artículo cuyo código empieza por “c”.
 
 SELECT MAX(PRECIO), MIN(PRECIO)
 FROM LINEAS_FAC
-WHERE UPPER(CODART) LIKE 'C%';
+WHERE UPPER(CODART) LIKE 'C%'
+GROUP BY CODART;
 
 --22. Igual que el anterior pero mostrando también la diferencia entre el precio máximo y mínimo.
 
 SELECT MAX(PRECIO), MIN(PRECIO), MAX(PRECIO)-MIN(PRECIO) DIFERENCIA
 FROM LINEAS_FAC
-WHERE UPPER(CODART) LIKE 'C%';
+WHERE UPPER(CODART) LIKE 'C%'
+GROUP BY CODART;
 
 --23. Nombre de aquellos artículos de los que se ha facturado más de 10000 euros.
 
-SELECT A.NOMBRE
+SELECT A.DESCRIP, SUM(LF.CANT*LF.PRECIO) FACTURACION
 FROM ARTICULOS A JOIN LINEAS_FAC LF
 ON A.CODART=LF.CODART
-WHERE LF.PRECIO>10000;
+HAVING SUM(LF.CANT*LF.PRECIO)>10000
+GROUP BY A.DESCRIP;
 
 --24. Número de facturas de cada uno de los clientes cuyo código está entre 150 y 300 (se debe mostrar este código), con cada IVA distinto que se les ha aplicado.
 
-SELECT DISTINCT IVA, CODFAC, CODCLI
+SELECT DISTINCT IVA, COUNT(CODFAC), CODCLI
 FROM FACTURAS
-WHERE CODCLI BETWEEN 150 AND 300;
+WHERE CODCLI BETWEEN 150 AND 300
+GROUP BY CODCLI, IVA;
 
 --25. Media del importe de las facturas, sin tener en cuenta impuestos ni descuentos.
 
-SELECT AVG(LF.PRECIO-F.IVA+F.DTO)
-FROM FACTURAS F JOIN LINEAS_FAC LF
-ON F.CODFAC=LF.CODFAC;
+SELECT AVG(SUM(LF.PRECIO*LF.CANT))
+FROM LINEAS_FAC LF
+GROUP BY LF.CODFAC;
 
 
 
